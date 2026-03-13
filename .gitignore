@@ -1,0 +1,145 @@
+# =========================
+# Global / OS
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+.idea/
+*.swp
+*.swo
+*~
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Env / secrets
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Root local junk
+# =========================
+.debris/
+.megaignore
+
+# =========================
+# Node / frontend
+# =========================
+node_modules/
+app/node_modules/
+
+dist/
+build/
+coverage/
+.nyc_output/
+.eslintcache
+.parcel-cache/
+.stencil/
+.npm/
+
+# =========================
+# Vite / cache
+# =========================
+.cache/
+.tmp/
+temp/
+
+# =========================
+# Firebase / Netlify / Vercel
+# =========================
+.firebase/
+app/.firebase/
+.netlify/
+app/.netlify/
+.vercel/
+app/.vercel/
+
+# Keep project config files if present
+!firebase.json
+!app/firebase.json
+!.firebaserc
+!app/.firebaserc
+!vercel.json
+!app/vercel.json
+
+# =========================
+# Capacitor / Ionic generated output
+# =========================
+app/dist/
+app/www/
+
+# =========================
+# Android / Gradle
+# =========================
+.gradle/
+app/android/.gradle/
+app/android/local.properties
+app/android/**/build/
+app/android/build/
+app/android/app/build/
+app/android/captures/
+app/android/.cxx/
+
+# Keystores / signing
+*.jks
+*.keystore
+*.pem
+
+# =========================
+# iOS / Xcode / CocoaPods
+# =========================
+DerivedData/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.moved-aside
+*.ipa
+
+# CocoaPods
+app/ios/App/Pods/
+
+# Optional: keep Podfile.lock committed for app reproducibility
+# so DO NOT ignore:
+# app/ios/App/Podfile.lock
+
+# =========================
+# Test / snapshots artifacts
+# =========================
+junit.xml
+*.lcov
+
+# =========================
+# Misc
+# =========================
+pids/
+*.pid
+*.seed
+*.pid.lock
+lib-cov/
+bower_components/
+jspm_packages/
+typings/
+.lock-wscript
+.node_repl_history
+*.tgz
+.yarn-integrity

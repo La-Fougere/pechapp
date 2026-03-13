@@ -1,0 +1,41 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component.
+ */
+
+.offline-resource {
+  position: relative;
+}
+
+.offline-resource__content {
+  transition: filter 150ms ease;
+}
+
+.offline-resource__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 150ms ease;
+}
+
+.offline-resource--offline .offline-resource__content {
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+.offline-resource--offline .offline-resource__overlay {
+  opacity: 1;
+  pointer-events: auto;
+}

@@ -1,0 +1,21 @@
+espece_nom,nom_scientifique,corps_forme,caudale_forme,caudale_couleur,ligne_laterale,ligne_laterale_couleur,forme_bouche,bouche_protractile,tache,position_tache
+Bar,Dicentrarchus labrax,ovale,échancrée,nan,droite,nan,terminale,oui,tâche noire,opercule
+Sparaillon,Diplodus annularis,ovale plat,fourchue,nan,droite,nan,terminale,légèrement,tâche noire,autour de la nageoire caudale
+Sar à museau pointu,Diplodus puntazzo,ovale,échancrée,noire,nan,nan,terminale,légèrement,tâche noire,autour de la nageoire caudale
+Sar commun,Diplodus sargus,ovale,échancrée,nan,peu marquée,noire,terminale,légèrement,tâche noire,sur le pédoncule caudal
+Sar à tête noire,Diplodus vulgaris,ovale,échancrée,nan,peu marquée,"noire, dorée",terminale,légèrement,2 barres noires très marquées,sur la nuque et à la base de la nageoire caudale
+Anchois, Engraulis encrasicolus,ovale,fourchue,nan,nan,nan,terminale,oui,tâche noire,a l'arrière de l'oeil
+Mérou,Mycteroperca rubra,ovale,droite,nan,nan,brune,terminale,oui,non,/
+Marbré,Lithognathus mormyrus,ovale,fourchue,nan,marquée,blanche,terminale,légèrement,"zébrures de bandes sombres, étroites et verticales",dos
+Merlu commun,Merluccius merluccius,rond,arrondie,nan,marquée,sombre,terminale,oui,non,/
+Rouget Barbet de roche,Mullus surmuletus,ovale,fourchue,jaune,nan,sombre,inférieure,non,non,/
+Pageot acarné,Pagellus acarne,ovale,fourchue,rose,droite,claire,terminale,légèrement,tâche noire ou rouge sombre,base haute de la nageoire pectorale
+Dorade rose,Pagellus bogaraveo,ovale,fourchue,rose,droite,sombre,terminale,légèrement,tâche noire,base haute de la ligne latérale
+Pageot commun,Pagellus erythrinus,ovale,fourchue,nan,nan,nan,terminale,légèrement,tâche rougeatre,base des pectorales
+Pagre commun,Pagrus pagrus,ovale,échancrée,nan,nan,nan,terminale,légèrement,non,/
+Cernier atlantique,Polyprion americanus,ovale,arrondie,nan,nan,nan,terminale,oui,non,/
+Sardine,Sardina pilchardus,ovale,échancrée,nan,nan,argenté,terminale,non,non,/
+Maquereau,Scomber scombrus,ovale,échancrée,nan,nan,argenté,terminale,non,zébrures de lignes sombres sur couleur vert-bleu,dos
+Sole commune,Solea vulgaris,plat,arrondie,nan,nan,brune,inférieure,non,tâche noire,nageoire pectorale
+Dorade royale,Sparus aurata,ovale,fourchue,nan,nan,beige,terminale,légèrement,tâche noire et tâche dorée,front et opercule
+Chinchard,Trachurus trachurus,ovale,fourchue,nan,deux lignes latérales,nan,terminale,non,tâche noire,sur les opercules

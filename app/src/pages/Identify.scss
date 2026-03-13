@@ -1,0 +1,136 @@
+#identify-page {
+  .identify-options {
+    display: grid;
+    gap: 16px;
+    padding: 20px 16px 32px;
+  }
+
+  .identify-card {
+    margin: 0;
+  }
+
+  .identify-qcm {
+    padding: 20px 16px 32px;
+  }
+
+  .identify-counter {
+    display: inline-block;
+    margin-top: 12px;
+  }
+
+  .identify-question {
+    margin: 12px 0 8px;
+  }
+
+  .identify-description {
+    margin: 0 0 16px;
+    color: var(--ion-color-medium);
+  }
+
+  .identify-choices {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .identify-choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--ion-color-step-150, #d7d8da);
+    background: var(--ion-item-background, #ffffff);
+    color: var(--ion-text-color);
+    text-align: left;
+    font: inherit;
+  }
+
+  .identify-choice--button {
+    cursor: pointer;
+  }
+
+  .identify-choice--button:hover {
+    border-color: rgba(var(--ion-color-primary-rgb), 0.6);
+  }
+
+  .identify-choice--button:focus-visible {
+    outline: 2px solid var(--ion-color-primary);
+    outline-offset: 2px;
+  }
+
+  .identify-choice--multi input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ion-color-primary);
+  }
+
+  .identify-choice span {
+    flex: 1;
+  }
+
+  .identify-actions {
+    display: grid;
+    gap: 8px;
+  }
+
+  .identify-results {
+    padding: 20px 16px 32px;
+    display: grid;
+    gap: 16px;
+  }
+
+  .identify-results__title {
+    margin: 0 0 8px;
+  }
+
+  .identify-results__intro {
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+
+  .identify-results__grid {
+    display: grid;
+    gap: 16px;
+  }
+
+  .identify-result-card {
+    margin: 0;
+  }
+
+  .identify-result-media {
+    background: #eef6f7;
+    padding: 16px;
+    display: grid;
+    place-items: center;
+  }
+
+  .identify-result-media img {
+    width: min(240px, 90%);
+    display: block;
+  }
+
+  .identify-confidence {
+    font-weight: 500;
+  }
+
+  .identify-results__actions {
+    display: grid;
+    gap: 8px;
+  }
+}
+
+@media (min-width: 768px) {
+  #identify-page {
+    .identify-options {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 24px 24px 40px;
+    }
+
+    .identify-results__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}

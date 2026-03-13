@@ -1,0 +1,17 @@
+<svg width="320" height="200" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="water" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e6f6f5" />
+      <stop offset="100%" stop-color="#c7e7ea" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="24" fill="url(#water)" />
+  <g>
+    <ellipse cx="150" cy="105" rx="82" ry="46" fill="#31909c" />
+    <polygon points="225,105 294,65 290,145" fill="#2b7f89" />
+    <circle cx="120" cy="95" r="7" fill="#0b2b2e" />
+    <circle cx="122" cy="93" r="2" fill="#ffffff" />
+    <path d="M120 125 Q150 140 190 125" stroke="#246b74" stroke-width="4" fill="none" />
+    <path d="M150 70 Q170 48 198 42" stroke="#469ba6" stroke-width="4" fill="none" />
+  </g>
+</svg>

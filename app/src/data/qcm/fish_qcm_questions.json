@@ -1,0 +1,166 @@
+{
+  "version": "1.0",
+  "generated_at": "2026-01-14T00:00:00Z",
+  "language": "fr",
+  "domain": "identification_especes_poissons",
+
+  "dataset": {
+    "source_csv": "base_fish_qcm.csv",
+    "primary_key": "nom_scientifique",
+    "display_name": "espece_nom",
+    "row_count": 20,
+    "unique_species_count": 20
+  },
+
+  "normalization": {
+    "applied_to_csv": true,
+    "rules": [
+      "lowercase",
+      "trim_spaces",
+      "treat empty or 'nan' as missing",
+      "split multi-values on ',' and trim tokens"
+    ],
+    "missing_token_output": "inconnu"
+  },
+
+  "engine_hints": {
+    "recommended_mode": "scoring",
+    "scoring_rules": {
+      "match": "add weight",
+      "mismatch": "subtract weight",
+      "missing_user_answer": "no_change",
+      "missing_species_value": "no_change",
+      "multi_match_rule": "match if at least one selected value is present"
+    },
+    "stop_conditions": [
+      "one species probability >= 90%",
+      "or remaining candidate species <= 3"
+    ]
+  },
+
+  "questions": [
+    {
+      "id": "corps_forme",
+      "column": "corps_forme",
+      "label": "Quelle est la forme générale du corps ?",
+      "description": "Vue de profil.",
+      "type": "qcm",
+      "choices": ["ovale", "ovale plat", "rond", "plat", "inconnu"],
+      "missing_choice": "inconnu",
+      "weight": 4
+    },
+    {
+      "id": "forme_bouche",
+      "column": "forme_bouche",
+      "label": "Où se situe la bouche ?",
+      "description": "Position de la bouche.",
+      "type": "qcm",
+      "choices": ["terminale", "inférieure", "inconnu"],
+      "missing_choice": "inconnu",
+      "weight": 3
+    },
+    {
+      "id": "bouche_protractile",
+      "column": "bouche_protractile",
+      "label": "La bouche peut-elle se projeter vers l'avant ?",
+      "description": "Aide à distinguer les espèces.",
+      "type": "qcm",
+      "choices": ["oui", "légèrement", "non", "inconnu"],
+      "missing_choice": "inconnu",
+      "weight": 3
+    },
+    {
+      "id": "caudale_forme",
+      "column": "caudale_forme",
+      "label": "Quelle est la forme de la nageoire caudale (queue) ?",
+      "description": "Forme générale de la queue.",
+      "type": "qcm",
+      "choices": ["échancrée", "fourchue", "arrondie", "droite", "inconnu"],
+      "missing_choice": "inconnu",
+      "weight": 3
+    },
+    {
+      "id": "ligne_laterale",
+      "column": "ligne_laterale",
+      "label": "Comment est la ligne latérale ?",
+      "description": "Aspect ou visibilité.",
+      "type": "qcm",
+      "choices": [
+        "droite",
+        "peu marquée",
+        "marquée",
+        "deux lignes latérales",
+        "inconnu"
+      ],
+      "missing_choice": "inconnu",
+      "weight": 2
+    },
+    {
+      "id": "ligne_laterale_couleur",
+      "column": "ligne_laterale_couleur",
+      "label": "Quelle est la couleur de la ligne latérale ?",
+      "description": "Plusieurs réponses possibles si plusieurs couleurs.",
+      "type": "multi_qcm",
+      "choices": [
+        "noire",
+        "dorée",
+        "brune",
+        "blanche",
+        "sombre",
+        "claire",
+        "argenté",
+        "beige"
+      ],
+      "missing_choice": "inconnu",
+      "weight": 2
+    },
+    {
+      "id": "caudale_couleur",
+      "column": "caudale_couleur",
+      "label": "Quelle est la couleur de la nageoire caudale ?",
+      "description": "Si visible.",
+      "type": "qcm",
+      "choices": ["noire", "jaune", "rose", "inconnu"],
+      "missing_choice": "inconnu",
+      "weight": 2
+    },
+    {
+      "id": "tache",
+      "column": "tache",
+      "label": "Observe-t-on une marque visible ?",
+      "description": "Tâche, barres ou zébrures.",
+      "type": "qcm",
+      "choices": [
+        "tâche noire",
+        "barres noires",
+        "zébrures",
+        "tâche rougeâtre",
+        "tâche noire et dorée",
+        "aucune",
+        "inconnu"
+      ],
+      "missing_choice": "inconnu",
+      "weight": 3
+    },
+    {
+      "id": "position_tache",
+      "column": "position_tache",
+      "label": "Où se situe la marque principale ?",
+      "description": "Si vous avez repéré une marque.",
+      "type": "qcm",
+      "choices": [
+        "opercule",
+        "oeil",
+        "nuque",
+        "dos",
+        "pédoncule caudal",
+        "autour de la nageoire caudale",
+        "base des pectorales",
+        "nageoire pectorale",
+        "inconnu"
+      ],
+      "missing_choice": "inconnu",
+      "weight": 2
+    }
+  ]
+}

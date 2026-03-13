@@ -1,0 +1,53 @@
+#about-page {
+  .about-hero {
+    padding: 28px 20px 12px;
+    text-align: center;
+    background: radial-gradient(circle at top, #e6f6f5, transparent 60%),
+      linear-gradient(135deg, #f7fbfb, #e9f4f5);
+  }
+
+  .about-hero__image {
+    width: min(360px, 80%);
+    margin: 0 auto 16px;
+    display: block;
+  }
+
+  .about-hero h2 {
+    margin: 0 0 8px;
+  }
+
+  .about-hero p {
+    margin: 0;
+    color: var(--ion-color-medium);
+  }
+
+  .about-sections {
+    display: grid;
+    gap: 16px;
+    padding: 16px 16px 32px;
+  }
+
+  .about-card {
+    margin: 0;
+  }
+}
+
+.ion-palette-dark #about-page {
+  .about-hero {
+    background: radial-gradient(circle at top, rgba(49, 144, 156, 0.35), transparent 60%),
+      linear-gradient(135deg, #0f1f22, #122a2d);
+  }
+
+  .about-hero p {
+    color: var(--ion-color-step-200, #c8d1d3);
+  }
+}
+
+@media (min-width: 768px) {
+  #about-page {
+    .about-sections {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 24px 24px 40px;
+    }
+  }
+}

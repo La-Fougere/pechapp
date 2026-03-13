@@ -1,0 +1,11 @@
+#settings-page {
+  ion-content::part(scroll) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .settings-actions {
+    margin-top: auto;
+    padding: 0 16px 24px;
+  }
+}
