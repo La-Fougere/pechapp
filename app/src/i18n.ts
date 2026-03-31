@@ -140,6 +140,7 @@ const translations = {
     appSectionTitle: 'Application',
     lastUpdateLabel: 'Dernière mise à jour',
     lastUpdateUnavailable: 'Indisponible',
+    forceUpdateApp: "Forcer la mise à jour de l'application",
     homeHeadline: 'Identifiez les poissons en un clin d’œil',
     homeIntro:
       'Des fiches claires, des repères visuels, et la réglementation à jour.',
@@ -361,6 +362,7 @@ const translations = {
     appSectionTitle: 'App',
     lastUpdateLabel: 'Last update',
     lastUpdateUnavailable: 'Unavailable',
+    forceUpdateApp: 'Force app update',
     homeHeadline: 'Identify fish at a glance',
     homeIntro:
       'Clear species cards, visual cues, and up-to-date regulations.',

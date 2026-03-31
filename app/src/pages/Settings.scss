@@ -13,4 +13,8 @@
     font-size: 0.9rem;
     color: var(--ion-color-medium);
   }
+
+  .settings-actions ion-button + ion-button {
+    margin-top: 12px;
+  }
 }

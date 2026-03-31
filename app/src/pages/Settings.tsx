@@ -77,6 +77,26 @@ const Settings: React.FC<StateProps & DispatchProps> = ({
     }).format(parsed);
   };
 
+  const handleForceUpdate = async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((registration) => registration.unregister()));
+      }
+
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((key) => caches.delete(key)));
+      }
+    } catch (error) {
+      console.error('Failed to force update', error);
+    } finally {
+      const url = new URL(window.location.href);
+      url.searchParams.set('reload', Date.now().toString());
+      window.location.replace(url.toString());
+    }
+  };
+
   return (
     <IonPage id="settings-page">
       <IonHeader>
@@ -138,6 +158,15 @@ const Settings: React.FC<StateProps & DispatchProps> = ({
         <div className="settings-actions">
           <IonButton expand="block" routerLink="/tutorial">
             {t('showTutorial')}
+          </IonButton>
+          <IonButton
+            expand="block"
+            color="primary"
+            fill="outline"
+            disabled={!isOnline}
+            onClick={handleForceUpdate}
+          >
+            {t('forceUpdateApp')}
           </IonButton>
         </div>
       </IonContent>
