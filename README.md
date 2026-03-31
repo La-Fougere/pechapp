@@ -1,7 +1,8 @@
 # Pêch'App
 **\<ici un superbe slogan>**
 
-**Version Alpha**: https://pechapp.teamgeek.fr
+**URL Alpha**: https://lien.cat/pechapp
+**URL Dev**: https://pechapp.teamgeek.fr
 
 Pêch'App est une application web multi-plateforme qui aide les professionnels à identifier les poissons afin de faire respecter la réglementation. L'app est actuellement en **alpha**: certaines informations restent à vérifier et les fonctionnalités ne sont pas encore définitives.
 
