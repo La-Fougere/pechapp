@@ -127,7 +127,7 @@ app/ios/App/Pods/
 # =========================
 junit.xml
 *.lcov
-dev-build.sh
+*.dev.sh
 
 # =========================
 # Misc
