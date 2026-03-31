@@ -81,6 +81,7 @@ const App: React.FC = () => {
 interface StateProps {
   darkMode: boolean;
   language: Language;
+  confLoadError?: string;
 }
 
 interface DispatchProps {
@@ -99,9 +100,11 @@ const IonicApp: React.FC<IonicAppProps> = ({
   loadConfData,
   loadUserData,
   language,
+  confLoadError,
 }) => {
   const isOnline = useNetworkStatus();
   const [showOfflineToast, setShowOfflineToast] = useState(false);
+  const [showDataErrorToast, setShowDataErrorToast] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -120,6 +123,12 @@ const IonicApp: React.FC<IonicAppProps> = ({
     }
   }, [isOnline]);
 
+  useEffect(() => {
+    if (confLoadError) {
+      setShowDataErrorToast(true);
+    }
+  }, [confLoadError]);
+
   return (
     <IonApp className={`${darkMode ? 'ion-palette-dark' : ''}`}>
       <IonToast
@@ -128,6 +137,13 @@ const IonicApp: React.FC<IonicAppProps> = ({
         duration={3200}
         position="top"
         onDidDismiss={() => setShowOfflineToast(false)}
+      />
+      <IonToast
+        isOpen={showDataErrorToast}
+        message={translate(language, 'dataLoadError')}
+        duration={3600}
+        position="top"
+        onDidDismiss={() => setShowDataErrorToast(false)}
       />
       <IonReactRouter>
         <IonSplitPane contentId="main">
@@ -170,6 +186,7 @@ const IonicAppConnected = connect<{}, StateProps, DispatchProps>({
   mapStateToProps: (state) => ({
     darkMode: state.user.darkMode,
     language: state.user.language,
+    confLoadError: state.data.loadError,
   }),
   mapDispatchToProps: {
     loadConfData,

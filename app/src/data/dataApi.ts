@@ -11,6 +11,8 @@ const HAS_LOGGED_IN = 'hasLoggedIn';
 const HAS_SEEN_TUTORIAL = 'hasSeenTutorial';
 const USERNAME = 'username';
 const LANGUAGE = 'language';
+const DARK_MODE = 'darkMode';
+const CACHE_LAST_UPDATED = 'cacheLastUpdated';
 const CONF_DATA = 'confData';
 const LOCATIONS_DATA = 'locationsData';
 
@@ -34,6 +36,15 @@ const storeJson = async (key: string, value: unknown) => {
   await Storage.set({ key, value: JSON.stringify(value) });
 };
 
+export const setCacheLastUpdatedData = async (timestamp: string) => {
+  await Storage.set({ key: CACHE_LAST_UPDATED, value: timestamp });
+};
+
+export const getCacheLastUpdatedData = async () => {
+  const stored = await Storage.get({ key: CACHE_LAST_UPDATED });
+  return stored.value || undefined;
+};
+
 const fetchJsonWithCache = async <T>(url: string, key: string) => {
   try {
     const response = await fetch(url);
@@ -42,6 +53,7 @@ const fetchJsonWithCache = async <T>(url: string, key: string) => {
     }
     const data = (await response.json()) as T;
     await storeJson(key, data);
+    await setCacheLastUpdatedData(new Date().toISOString());
     return data;
   } catch (error) {
     const cached = await readJson<T>(key);
@@ -91,11 +103,13 @@ export const getUserData = async () => {
     Storage.get({ key: HAS_SEEN_TUTORIAL }),
     Storage.get({ key: USERNAME }),
     Storage.get({ key: LANGUAGE }),
+    Storage.get({ key: DARK_MODE }),
   ]);
   const isLoggedin = (await response[0].value) === 'true';
   const hasSeenTutorial = (await response[1].value) === 'true';
   const username = (await response[2].value) || undefined;
   const storedLanguage = await response[3].value;
+  const darkMode = (await response[4].value) === 'true';
   const language: Language =
     storedLanguage === 'en' || storedLanguage === 'fr'
       ? storedLanguage
@@ -104,6 +118,7 @@ export const getUserData = async () => {
     isLoggedin,
     hasSeenTutorial,
     username,
+    darkMode,
     language,
   };
   return data;
@@ -130,6 +145,10 @@ export const setUsernameData = async (username?: string) => {
 
 export const setLanguageData = async (language: Language) => {
   await Storage.set({ key: LANGUAGE, value: language });
+};
+
+export const setDarkModeData = async (darkMode: boolean) => {
+  await Storage.set({ key: DARK_MODE, value: JSON.stringify(darkMode) });
 };
 
 function parseSessions(schedule: Schedule) {

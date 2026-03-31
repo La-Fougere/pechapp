@@ -39,3 +39,41 @@
   opacity: 1;
   pointer-events: auto;
 }
+
+.offline-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #1462ea;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(20, 98, 234, 0.25);
+}
+
+.offline-banner--offline {
+  background: #2c848f;
+  box-shadow: 0 6px 16px rgba(44, 132, 143, 0.25);
+}
+
+.offline-banner--dark {
+  background: #124fc0;
+  box-shadow: 0 6px 16px rgba(10, 45, 120, 0.45);
+}
+
+.offline-banner--dark.offline-banner--offline {
+  background: #225f67;
+  box-shadow: 0 6px 16px rgba(20, 70, 78, 0.45);
+}
+
+.offline-banner__icon {
+  font-size: 1.2rem;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.offline-banner__text {
+  font-size: 0.95rem;
+  line-height: 1.35;
+}

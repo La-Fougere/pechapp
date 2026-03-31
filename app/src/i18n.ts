@@ -81,6 +81,10 @@ const translations = {
       'Vous ne pouvez pas voir/utiliser ceci en mode hors ligne.',
     offlineStatus:
       'Mode hors ligne activé. Certaines ressources externes peuvent être indisponibles.',
+    offlineBannerMessage:
+      'Vous êtes actuellement en mode hors ligne, certaines fonctionnalités peuvent être désactivées.',
+    dataLoadError:
+      "Certaines données n'ont pas pu être chargées. Le mode hors ligne est limité.",
     updatePicture: 'Mettre à jour la photo',
     changeUsername: "Changer le nom d'utilisateur",
     changePassword: 'Changer le mot de passe',
@@ -135,6 +139,7 @@ const translations = {
     wifiNetworkLabel: 'Réseau Wi-Fi',
     appSectionTitle: 'Application',
     lastUpdateLabel: 'Dernière mise à jour',
+    lastUpdateUnavailable: 'Indisponible',
     homeHeadline: 'Identifiez les poissons en un clin d’œil',
     homeIntro:
       'Des fiches claires, des repères visuels, et la réglementation à jour.',
@@ -298,6 +303,10 @@ const translations = {
     offlineMessage: "You can't see/use that in offline mode.",
     offlineStatus:
       'Offline mode enabled. Some external resources may be unavailable.',
+    offlineBannerMessage:
+      'You are currently offline. Some features may be disabled.',
+    dataLoadError:
+      'Some data could not be loaded. Offline mode is limited.',
     updatePicture: 'Update Picture',
     changeUsername: 'Change Username',
     changePassword: 'Change Password',
@@ -351,6 +360,7 @@ const translations = {
     wifiNetworkLabel: 'Wifi network',
     appSectionTitle: 'App',
     lastUpdateLabel: 'Last update',
+    lastUpdateUnavailable: 'Unavailable',
     homeHeadline: 'Identify fish at a glance',
     homeIntro:
       'Clear species cards, visual cues, and up-to-date regulations.',

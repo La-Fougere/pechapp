@@ -5,7 +5,7 @@ import { locationsReducer } from './locations/locations.reducer';
 
 export const initialState: AppState = {
   data: {
-    schedule: { groups: [] } as any,
+    schedule: { date: '', groups: [] } as any,
     sessions: [],
     speakers: [],
     favorites: [],
@@ -14,6 +14,7 @@ export const initialState: AppState = {
     filteredTracks: [],
     mapCenterId: 0,
     loading: false,
+    loadError: undefined,
     menuEnabled: true,
   },
   user: {

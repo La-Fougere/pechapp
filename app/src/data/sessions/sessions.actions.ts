@@ -4,9 +4,25 @@ import { ConfState } from './conf.state';
 
 export const loadConfData = () => async (dispatch: React.Dispatch<any>) => {
   dispatch(setLoading(true));
-  const data = await getConfData();
-  dispatch(setData(data));
-  dispatch(setLoading(false));
+  try {
+    const data = await getConfData();
+    dispatch(setData({ ...data, loadError: undefined }));
+  } catch (error) {
+    console.error('Error loading conf data:', error);
+    dispatch(
+      setData({
+        schedule: { date: '', groups: [] } as ConfState['schedule'],
+        sessions: [],
+        speakers: [],
+        locations: [],
+        allTracks: [],
+        filteredTracks: [],
+        loadError: 'conf-data-unavailable',
+      })
+    );
+  } finally {
+    dispatch(setLoading(false));
+  }
 };
 
 export const setLoading = (isLoading: boolean) =>

@@ -10,12 +10,24 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/react';
-import { leafOutline, bookOutline, searchOutline } from 'ionicons/icons';
+import {
+  leafOutline,
+  bookOutline,
+  searchOutline,
+  informationCircleOutline,
+} from 'ionicons/icons';
 import { useTranslation } from '../i18n';
+import { connect } from '../data/connect';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import './Home.scss';
 
-const Home: React.FC = () => {
+interface StateProps {
+  darkMode: boolean;
+}
+
+const Home: React.FC<StateProps> = ({ darkMode }) => {
   const { t } = useTranslation();
+  const isOnline = useNetworkStatus();
 
   return (
     <IonPage id="home-page">
@@ -29,6 +41,21 @@ const Home: React.FC = () => {
       </IonHeader>
       <IonContent>
         <div className="home-hero">
+          {!isOnline && (
+            <div
+              className={`offline-banner offline-banner--offline offline-banner--home ${darkMode ? 'offline-banner--dark' : ''}`}
+              role="status"
+              aria-live="polite"
+            >
+              <IonIcon
+                className="offline-banner__icon"
+                icon={informationCircleOutline}
+              />
+              <div className="offline-banner__text">
+                {t('offlineBannerMessage')}
+              </div>
+            </div>
+          )}
           <div className="home-hero__content">
             <h1>{t('homeHeadline')}</h1>
             <p>{t('homeIntro')}</p>
@@ -62,4 +89,9 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default connect<{}, StateProps, {}>({
+  mapStateToProps: (state) => ({
+    darkMode: state.user.darkMode,
+  }),
+  component: Home,
+});

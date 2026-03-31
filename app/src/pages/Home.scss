@@ -27,6 +27,11 @@
     width: min(420px, 90%);
     justify-self: center;
   }
+
+  .offline-banner--home {
+    grid-column: 1 / -1;
+    margin: 0 0 16px;
+  }
 }
 
 .ion-palette-dark #home-page {

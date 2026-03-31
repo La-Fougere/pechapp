@@ -4,6 +4,7 @@ import {
   setUsernameData,
   setHasSeenTutorialData,
   setLanguageData,
+  setDarkModeData,
 } from '../dataApi';
 import { ActionType } from '../../util/types';
 import { Language, UserState } from './user.state';
@@ -59,11 +60,14 @@ export const setHasSeenTutorial =
     } as const;
   };
 
-export const setDarkMode = (darkMode: boolean) =>
-  ({
-    type: 'set-dark-mode',
-    darkMode,
-  } as const);
+export const setDarkMode =
+  (darkMode: boolean) => async (dispatch: React.Dispatch<any>) => {
+    await setDarkModeData(darkMode);
+    return {
+      type: 'set-dark-mode',
+      darkMode,
+    } as const;
+  };
 
 export const setLanguage =
   (language: Language) => async (dispatch: React.Dispatch<any>) => {

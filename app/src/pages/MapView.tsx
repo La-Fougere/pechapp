@@ -49,7 +49,7 @@ const MapView: React.FC<StateProps & DispatchProps> = ({
   }, [loadLocations]);
 
   const initMap = () => {
-    if (!isOnline || !locations?.length || !mapCanvas.current || map.current) {
+    if (!locations?.length || !mapCanvas.current || map.current) {
       return;
     }
 

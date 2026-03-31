@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonHeader,
   IonToolbar,
@@ -14,11 +14,15 @@ import {
   IonSelectOption,
   IonToggle,
   IonButton,
+  IonIcon,
 } from '@ionic/react';
+import { informationCircleOutline } from 'ionicons/icons';
 import { connect } from '../data/connect';
 import { setDarkMode, setLanguage } from '../data/user/user.actions';
 import type { Language } from '../data/user/user.state';
+import { getCacheLastUpdatedData } from '../data/dataApi';
 import { useTranslation } from '../i18n';
+import { useNetworkStatus } from '../hooks/useNetworkStatus';
 import './Settings.scss';
 
 interface StateProps {
@@ -38,6 +42,40 @@ const Settings: React.FC<StateProps & DispatchProps> = ({
   setLanguage,
 }) => {
   const { t } = useTranslation();
+  const isOnline = useNetworkStatus();
+  const [cacheUpdatedAt, setCacheUpdatedAt] = useState<string | undefined>();
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadCacheTimestamp = async () => {
+      const value = await getCacheLastUpdatedData();
+      if (isMounted) {
+        setCacheUpdatedAt(value);
+      }
+    };
+    loadCacheTimestamp();
+    return () => {
+      isMounted = false;
+    };
+  }, [isOnline]);
+
+  const formatCacheDate = (value?: string) => {
+    if (!value) {
+      return t('lastUpdateUnavailable');
+    }
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) {
+      return t('lastUpdateUnavailable');
+    }
+    const locale = language === 'fr' ? 'fr-FR' : 'en-US';
+    return new Intl.DateTimeFormat(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(parsed);
+  };
 
   return (
     <IonPage id="settings-page">
@@ -50,6 +88,21 @@ const Settings: React.FC<StateProps & DispatchProps> = ({
         </IonToolbar>
       </IonHeader>
       <IonContent>
+        {!isOnline && (
+          <div
+            className={`offline-banner offline-banner--offline ${darkMode ? 'offline-banner--dark' : ''}`}
+            role="status"
+            aria-live="polite"
+          >
+            <IonIcon
+              className="offline-banner__icon"
+              icon={informationCircleOutline}
+            />
+            <div className="offline-banner__text">
+              {t('offlineBannerMessage')}
+            </div>
+          </div>
+        )}
         <IonList inset>
           <IonItem>
             <IonLabel>{t('darkMode')}</IonLabel>
@@ -74,6 +127,12 @@ const Settings: React.FC<StateProps & DispatchProps> = ({
                 {t('languageEnglish')}
               </IonSelectOption>
             </IonSelect>
+          </IonItem>
+          <IonItem>
+            <IonLabel>{t('lastUpdateLabel')}</IonLabel>
+            <div className="settings-cache-date" slot="end">
+              {formatCacheDate(cacheUpdatedAt)}
+            </div>
           </IonItem>
         </IonList>
         <div className="settings-actions">

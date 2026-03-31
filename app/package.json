@@ -30,13 +30,15 @@
   "scripts": {
     "start": "npm run dev",
     "dev": "vite",
+    "predev": "npm run generate:asset-manifest",
     "ionic:serve": "vite",
-    "ionic:build": "tsc && vite build",
-    "build": "tsc && vite build",
+    "ionic:build": "npm run generate:asset-manifest && tsc && vite build",
+    "build": "npm run generate:asset-manifest && tsc && vite build",
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\"",
     "precommit": "npm run format && lint-staged",
-    "prepare": "[ -d .git ] && husky install || true"
+    "prepare": "[ -d .git ] && husky install || true",
+    "generate:asset-manifest": "node scripts/generate-asset-manifest.mjs"
   },
   "eslintConfig": {
     "extends": "react-app"
