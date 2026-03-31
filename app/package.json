@@ -36,7 +36,7 @@
     "preview": "vite preview",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,md}\"",
     "precommit": "npm run format && lint-staged",
-    "prepare": "husky install"
+    "prepare": "[ -d .git ] && husky install || true"
   },
   "eslintConfig": {
     "extends": "react-app"
