@@ -87,7 +87,7 @@ const Tutorial: React.FC<TutorialProps> = ({
               />
               <h2 className="slide-title">{t('tutorialWhatIsIonic')}</h2>
               <p>
-                <b>Ionic Framework</b> {t('tutorialIonicDescription')}
+                <b>Pêch'App</b> {t('tutorialIonicDescription')}
               </p>
             </div>
           </section>
