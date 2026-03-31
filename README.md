@@ -40,17 +40,13 @@ Aider les équipes de terrain à reconnaître rapidement une espèce, à vérifi
 - Capacitor (packaging mobile si nécessaire)
 - Service worker personnalisé pour le cache offline
 
-## Démarrage local
+## Build
 ```shell
-cd app
+./npm install
 ```
 ```shell
-npm install
+./npm build
 ```
-```shell
-npm run ionic:serve -- --host 0.0.0.0 --port 3001 --clearScreen false
-```
-Ouvrir `http://localhost:3001`
 
 <br></br>
 ## Structure rapide
