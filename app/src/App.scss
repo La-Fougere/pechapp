@@ -40,6 +40,31 @@
   pointer-events: auto;
 }
 
+.ion-palette-dark,
+.ion-palette-dark * {
+  scrollbar-color: #2b6f78 #16262a;
+  scrollbar-width: thin;
+}
+
+.ion-palette-dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.ion-palette-dark ::-webkit-scrollbar-track {
+  background: #16262a;
+}
+
+.ion-palette-dark ::-webkit-scrollbar-thumb {
+  background-color: #2b6f78;
+  border-radius: 999px;
+  border: 2px solid #16262a;
+}
+
+.ion-palette-dark ::-webkit-scrollbar-thumb:hover {
+  background-color: #3a8b96;
+}
+
 .offline-banner {
   display: flex;
   align-items: flex-start;
