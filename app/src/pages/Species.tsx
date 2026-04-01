@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   IonHeader,
   IonToolbar,
@@ -51,7 +51,505 @@ type SpeciesRaw = {
   taille?: string | null;
   obligation?: string | null;
   autre?: string | null;
+  description?: string | null;
+  habitat?: string | null;
+  diet?: string | null;
+  period?: string | null;
+  image?: string | null;
 };
+
+type SheetSpecies = {
+  name?: string;
+  latin_name?: string;
+  appellation_speciale?: string;
+  code_fao?: string;
+  taille_minimale?: string;
+  obligation_de_debarquement?: string;
+  textes_reglementaires?: string;
+  autre?: string;
+  description?: string;
+  habitat?: string;
+  diet?: string;
+  period?: string;
+  image?: string;
+};
+
+const DEFAULT_IMAGE = '/assets/img/fish/fish-hero.svg';
+
+const cleanText = (value?: string | null) =>
+  typeof value === 'string' ? value.replace(/\r\n/g, '\n').trim() : '';
+
+const normalizeSize = (value?: string | null) => {
+  const cleaned = cleanText(value);
+  if (!cleaned) return 'Taille à compléter.';
+  return cleaned.replace(/(\d)(cm)/gi, '$1 cm').replace(/\s+/g, ' ').trim();
+};
+
+const buildDescription = (
+  name: string,
+  description?: string | null,
+  appellation?: string | null,
+  codeFao?: string | null
+) => {
+  const parts: string[] = [];
+  const cleanedDescription = cleanText(description);
+  if (cleanedDescription) {
+    parts.push(cleanedDescription);
+  }
+  const cleanedAppellation = cleanText(appellation);
+  if (cleanedAppellation && cleanedAppellation !== '/') {
+    parts.push(`Appellation spéciale : ${cleanedAppellation}`);
+  }
+  const cleanedCode = cleanText(codeFao);
+  if (cleanedCode) {
+    parts.push(`Code FAO : ${cleanedCode}`);
+  }
+  return parts.length > 0
+    ? parts.join(' • ')
+    : `Fiche descriptive de ${name} à compléter.`;
+};
+
+const buildRegulation = (
+  textes?: string | null,
+  obligation?: string | null,
+  autre?: string | null
+) => {
+  const parts: string[] = [];
+  const cleanedTextes = cleanText(textes);
+  if (cleanedTextes) {
+    parts.push(`Textes applicables :\n${cleanedTextes}`);
+  }
+  const cleanedObligation = cleanText(obligation);
+  if (cleanedObligation) {
+    parts.push(`Obligation de débarquement : ${cleanedObligation}`);
+  }
+  const cleanedAutre = cleanText(autre);
+  if (cleanedAutre) {
+    parts.push(`Autre :\n${cleanedAutre}`);
+  }
+  return parts.length > 0 ? parts.join('\n\n') : 'Réglementation à compléter.';
+};
+
+const makeSpecies = ({
+  name,
+  latinName,
+  appellation,
+  codeFao,
+  textes,
+  taille,
+  obligation,
+  autre,
+  description,
+  habitat,
+  diet,
+  period,
+  image,
+}: SpeciesRaw): SpeciesInfo => ({
+  name,
+  latinName,
+  image: cleanText(image) || DEFAULT_IMAGE,
+  description: buildDescription(name, description, appellation, codeFao),
+  habitat: cleanText(habitat) || 'Habitat à compléter.',
+  size: normalizeSize(taille),
+  diet: cleanText(diet) || 'Régime alimentaire à compléter.',
+  period: cleanText(period) || 'Période de présence à compléter.',
+  regulation: buildRegulation(textes, obligation, autre),
+});
+
+const FALLBACK_SPECIES: SpeciesInfo[] = [
+  makeSpecies({
+    name: 'Bar',
+    latinName: 'Dicentrarchus labrax',
+    appellation: 'Loup de mer',
+    codeFao: 'BSS',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '25cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusqu’à un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusqu’à un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusqu’à un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Sparaillon',
+    latinName: 'Diplodus annularis',
+    appellation: 'Pataclet',
+    codeFao: 'ANN',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '12 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusqu’à un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Sar à museau pointu',
+    latinName: 'Diplodus puntazzo',
+    appellation: '/',
+    codeFao: 'SHR',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '18 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Sar commun',
+    latinName: 'Diplodus sargus',
+    appellation: '/',
+    codeFao: 'SWA',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '23 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Sar à tête noire',
+    latinName: 'Diplodus vulgaris',
+    appellation: '/',
+    codeFao: 'CTB',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '18 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Anchois',
+    latinName: 'Engraulis encrasicolus',
+    appellation: '/',
+    codeFao: 'ANE',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '9 cm',
+    obligation: 'Oui',
+    autre: null,
+  }),
+  makeSpecies({
+    name: 'Mérou Royal',
+    latinName: 'Mycteroperca rubra',
+    appellation: '/',
+    codeFao: 'BSX',
+    textes: `- Règlement (UE) 2019/1241
+
+-Annexe III,  Réglement n°1967/2006 modifié
+
+- règlementation de la pêche du mérou dans les eaux maritimes en Méditerranée continentale : arrêté préfectoral n° R93-2023-12-08-00001
+
+- règlementation de la pêche de différentes espèces de mérous dans les eaux territoriales autour de la Corse : arrêté préfectoral n° R93-2023-12-20-00002`,
+    taille: '45 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Marbré',
+    latinName: 'Lithognathus mormyrus',
+    appellation: '/',
+    codeFao: 'SSB',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '20 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Merlu commun',
+    latinName: 'Merluccius merluccius',
+    appellation: '/',
+    codeFao: 'HKE',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '20 cm',
+    obligation: 'Oui',
+    autre: `Merlu commun (mise en place d'un plafond de capture (quota) pour les fileyeurs en Méditerranée : référence pas trouvée
+
+Rejets :
+ - jusquà un maximum de 5 % du total des captures
+annuelles de ces espèces par des navires utilisant des chaluts de
+fond;
+- jusquà un maximum de 1 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails`,
+  }),
+  makeSpecies({
+    name: 'Rouget Barbet de roche',
+    latinName: 'Mullus surmuletus',
+    appellation: null,
+    codeFao: 'MUR',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '11 cm',
+    obligation: 'Oui',
+    autre: `Rejets :
+ - jusquà un maximum de 5 % du total des captures
+annuelles de ces espèces par des navires utilisant des chaluts de
+fond;
+- jusquà un maximum de 1 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails`,
+  }),
+  makeSpecies({
+    name: 'Pageot acarné',
+    latinName: 'Pagellus acarne',
+    appellation: null,
+    codeFao: 'SBA',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '17 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Dorade rose',
+    latinName: 'Pagellus bogaraveo',
+    appellation: null,
+    codeFao: 'SBR',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '33 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+- pour les captures au moyen d'hameçons et de lignes
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Pageot commun',
+    latinName: 'Pagellus erythrinus',
+    appellation: '/',
+    codeFao: 'PAC',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '15 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Pagre commun',
+    latinName: 'Pagrus pagrus',
+    appellation: null,
+    codeFao: 'RPG',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '18 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Cernier atlantique',
+    latinName: 'Polyprion americanus',
+    appellation: '/',
+    codeFao: 'WRF',
+    textes: `- Règlement (UE) 2019/1241
+
+-Annexe III,  Réglement n°1967/2006 modifié
+
+- règlementation de la pêche du mérou dans les eaux maritimes en Méditerranée continentale : arrêté préfectoral n° R93-2023-12-08-00001
+
+- règlementation de la pêche de différentes espèces de mérous dans les eaux territoriales autour de la Corse : arrêté préfectoral n° R93-2023-12-20-00002`,
+    taille: '45 cm',
+    obligation: 'Oui',
+    autre: `Pêche sous-marine interdite
+
+Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Sardine',
+    latinName: 'Sardina pilchardus',
+    appellation: '/',
+    codeFao: 'PIL',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '11 cm',
+    obligation: 'Oui',
+    autre:
+      'En Méditerranée, pour les engins traînants ciblant la sardine et l’anchois, le maillage minimal est fixé à 20mm (R(UE) 2019/1241 annexe IV partie B).',
+  }),
+  makeSpecies({
+    name: 'Maquereau',
+    latinName: 'Scomber scombrus',
+    appellation: '/',
+    codeFao: 'MAC',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '18 cm',
+    obligation: 'Oui',
+    autre: null,
+  }),
+  makeSpecies({
+    name: 'Sole commune',
+    latinName: 'Solea vulgaris',
+    appellation: '/',
+    codeFao: 'SOL',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '20 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Dorade royale',
+    latinName: 'Sparus aurata',
+    appellation: '/',
+    codeFao: 'SBG',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '20 cm',
+    obligation: 'Oui',
+    autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+
+-jusquà un maximum de 5 % du total des captures annuelles de
+ces espèces par des navires utilisant des chaluts de fond;
+-jusquà un maximum de 3 % du total des captures
+annuelles de ces espèces par des navires utilisant des filets maillants
+et des trémails;
+-jusquà un maximum de 1 % du
+total des captures annuelles de ces espèces par des navires utilisant
+des lignes et des hameçons`,
+  }),
+  makeSpecies({
+    name: 'Chinchard',
+    latinName: 'Trachurus trachurus',
+    appellation: 'Sévereau',
+    codeFao: 'HOM',
+    textes: `- Règlement (UE) 2019/1241
+- Réglement (UE) 2019/1022
+-Annexe III,  Réglement n°1967/2006 modifié`,
+    taille: '15 cm',
+    obligation: 'Oui',
+    autre: null,
+  }),
+];
 
 const Species: React.FC = () => {
   const { t } = useTranslation();
@@ -59,476 +557,62 @@ const Species: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null);
 
-  const species = useMemo<SpeciesInfo[]>(
-    () => {
-      const image = '/assets/img/fish/fish-hero.svg';
-      const cleanText = (value?: string | null) =>
-        typeof value === 'string' ? value.replace(/\r\n/g, '\n').trim() : '';
+  const [species, setSpecies] = useState<SpeciesInfo[]>(FALLBACK_SPECIES);
 
-      const normalizeSize = (value?: string | null) => {
-        const cleaned = cleanText(value);
-        if (!cleaned) return 'Taille à compléter.';
-        return cleaned.replace(/(\d)(cm)/gi, '$1 cm').replace(/\s+/g, ' ').trim();
-      };
+  useEffect(() => {
+    let isMounted = true;
 
-      const buildDescription = (
-        name: string,
-        appellation?: string | null,
-        codeFao?: string | null
-      ) => {
-        const parts: string[] = [];
-        const cleanedAppellation = cleanText(appellation);
-        if (cleanedAppellation && cleanedAppellation !== '/') {
-          parts.push(`Appellation spéciale : ${cleanedAppellation}`);
+    const loadSheet = async () => {
+      try {
+        const response = await fetch('/assets/sheet.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Failed to load sheet.json (${response.status})`);
         }
-        const cleanedCode = cleanText(codeFao);
-        if (cleanedCode) {
-          parts.push(`Code FAO : ${cleanedCode}`);
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('sheet.json payload is not an array');
         }
-        return parts.length > 0
-          ? parts.join(' | ')
-          : `Fiche descriptive de ${name} à compléter.`;
-      };
+        const mapped = data
+          .map((row: SheetSpecies) => {
+            const name = cleanText(row.name);
+            const latinName = cleanText(row.latin_name);
+            if (!name || !latinName) {
+              return null;
+            }
+            const appellation = cleanText(row.appellation_speciale);
+            return makeSpecies({
+              name,
+              latinName,
+              appellation: appellation || null,
+              codeFao: cleanText(row.code_fao) || null,
+              textes: row.textes_reglementaires ?? null,
+              taille: row.taille_minimale ?? null,
+              obligation: row.obligation_de_debarquement ?? null,
+              autre: row.autre ?? null,
+              description: row.description ?? null,
+              habitat: row.habitat ?? null,
+              diet: row.diet ?? null,
+              period: row.period ?? null,
+              image: row.image ?? null,
+            });
+          })
+          .filter((entry): entry is SpeciesInfo => Boolean(entry));
 
-      const buildRegulation = (
-        textes?: string | null,
-        obligation?: string | null,
-        autre?: string | null
-      ) => {
-        const parts: string[] = [];
-        const cleanedTextes = cleanText(textes);
-        if (cleanedTextes) {
-          parts.push(`Textes applicables :\n${cleanedTextes}`);
+        if (mapped.length > 0 && isMounted) {
+          setSpecies(mapped);
         }
-        const cleanedObligation = cleanText(obligation);
-        if (cleanedObligation) {
-          parts.push(`Obligation de débarquement : ${cleanedObligation}`);
-        }
-        const cleanedAutre = cleanText(autre);
-        if (cleanedAutre) {
-          parts.push(`Autre :\n${cleanedAutre}`);
-        }
-        return parts.length > 0 ? parts.join('\n\n') : 'Réglementation à compléter.';
-      };
+      } catch (error) {
+        console.warn('Unable to load sheet.json, using fallback data.', error);
+      }
+    };
 
-      const makeSpecies = ({
-        name,
-        latinName,
-        appellation,
-        codeFao,
-        textes,
-        taille,
-        obligation,
-        autre,
-      }: SpeciesRaw): SpeciesInfo => ({
-        name,
-        latinName,
-        image,
-        description: buildDescription(name, appellation, codeFao),
-        habitat: 'Habitat à compléter.',
-        size: normalizeSize(taille),
-        diet: 'Régime alimentaire à compléter.',
-        period: 'Période de présence à compléter.',
-        regulation: buildRegulation(textes, obligation, autre),
-      });
+    loadSheet();
 
-      return [
-        makeSpecies({
-          name: 'Bar',
-          latinName: 'Dicentrarchus labrax',
-          appellation: 'Loup de mer',
-          codeFao: 'BSS',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '25cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Sparaillon',
-          latinName: 'Diplodus annularis',
-          appellation: 'Pataclet',
-          codeFao: 'ANN',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '12 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Sar à museau pointu',
-          latinName: 'Diplodus puntazzo',
-          appellation: '/',
-          codeFao: 'SHR',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '18 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Sar commun',
-          latinName: 'Diplodus sargus',
-          appellation: '/',
-          codeFao: 'SWA',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '23 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Sar à tête noire',
-          latinName: 'Diplodus vulgaris',
-          appellation: '/',
-          codeFao: 'CTB',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '18 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Anchois',
-          latinName: 'Engraulis encrasicolus',
-          appellation: '/',
-          codeFao: 'ANE',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '9 cm',
-          obligation: 'Oui',
-          autre: null,
-        }),
-        makeSpecies({
-          name: 'Mérou Royal',
-          latinName: 'Mycteroperca rubra',
-          appellation: '/',
-          codeFao: 'BSX',
-          textes: `- Règlement (UE) 2019/1241
-
--Annexe III,  Réglement n°1967/2006 modifié
-
-- règlementation de la pêche du mérou dans les eaux maritimes en Méditerranée continentale : arrêté préfectoral n° R93-2023-12-08-00001
-
-- règlementation de la pêche de différentes espèces de mérous dans les eaux territoriales autour de la Corse : arrêté préfectoral n° R93-2023-12-20-00002`,
-          taille: '45 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Marbré',
-          latinName: 'Lithognathus mormyrus',
-          appellation: '/',
-          codeFao: 'SSB',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '20 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Merlu commun',
-          latinName: 'Merluccius merluccius',
-          appellation: '/',
-          codeFao: 'HKE',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '20 cm',
-          obligation: 'Oui',
-          autre: `Merlu commun (mise en place d'un plafond de capture (quota) pour les fileyeurs en Méditerranée : référence pas trouvée
-
-Rejets :
- - jusqu’à un maximum de 5 % du total des captures
-annuelles de ces espèces par des navires utilisant des chaluts de
-fond;
-- jusqu’à un maximum de 1 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails`,
-        }),
-        makeSpecies({
-          name: 'Rouget Barbet de roche',
-          latinName: 'Mullus surmuletus',
-          appellation: null,
-          codeFao: 'MUR',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '11 cm',
-          obligation: 'Oui',
-          autre: `Rejets :
- - jusqu’à un maximum de 5 % du total des captures
-annuelles de ces espèces par des navires utilisant des chaluts de
-fond;
-- jusqu’à un maximum de 1 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails`,
-        }),
-        makeSpecies({
-          name: 'Pageot acarné',
-          latinName: 'Pagellus acarne',
-          appellation: null,
-          codeFao: 'SBA',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '17 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Dorade rose',
-          latinName: 'Pagellus bogaraveo',
-          appellation: null,
-          codeFao: 'SBR',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '33 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-- pour les captures au moyen d'hameçons et de lignes
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
-
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Pageot commun',
-          latinName: 'Pagellus erythrinus',
-          appellation: '/',
-          codeFao: 'PAC',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '15 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Pagre commun',
-          latinName: 'Pagrus pagrus',
-          appellation: null,
-          codeFao: 'RPG',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '18 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Cernier atlantique',
-          latinName: 'Polyprion americanus',
-          appellation: '/',
-          codeFao: 'WRF',
-          textes: `- Règlement (UE) 2019/1241
-
--Annexe III,  Réglement n°1967/2006 modifié
-
-- règlementation de la pêche du mérou dans les eaux maritimes en Méditerranée continentale : arrêté préfectoral n° R93-2023-12-08-00001
-
-- règlementation de la pêche de différentes espèces de mérous dans les eaux territoriales autour de la Corse : arrêté préfectoral n° R93-2023-12-20-00002`,
-          taille: '45 cm',
-          obligation: 'Oui',
-          autre: `Pêche sous-marine interdite
-
-Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Sardine',
-          latinName: 'Sardina pilchardus',
-          appellation: '/',
-          codeFao: 'PIL',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '11 cm',
-          obligation: 'Oui',
-          autre:
-            'En Méditerranée, pour les engins traînants ciblant la sardine et l’anchois, le maillage minimal est fixé à 20mm (R(UE) 2019/1241 annexe IV partie B).',
-        }),
-        makeSpecies({
-          name: 'Maquereau',
-          latinName: 'Scomber scombrus',
-          appellation: '/',
-          codeFao: 'MAC',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '18 cm',
-          obligation: 'Oui',
-          autre: null,
-        }),
-        makeSpecies({
-          name: 'Sole commune',
-          latinName: 'Solea vulgaris',
-          appellation: '/',
-          codeFao: 'SOL',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '20 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Dorade royale',
-          latinName: 'Sparus aurata',
-          appellation: '/',
-          codeFao: 'SBG',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '20 cm',
-          obligation: 'Oui',
-          autre: `Rejets autorisés (dérogation à l'obligation de débarquement) :
-
--jusqu’à un maximum de 5 % du total des captures annuelles de
-ces espèces par des navires utilisant des chaluts de fond;
--jusqu’à un maximum de 3 % du total des captures
-annuelles de ces espèces par des navires utilisant des filets maillants
-et des trémails;
--jusqu’à un maximum de 1 % du
-total des captures annuelles de ces espèces par des navires utilisant
-des lignes et des hameçons`,
-        }),
-        makeSpecies({
-          name: 'Chinchard',
-          latinName: 'Trachurus trachurus',
-          appellation: 'Sévereau',
-          codeFao: 'HOM',
-          textes: `- Règlement (UE) 2019/1241
-- Réglement (UE) 2019/1022
--Annexe III,  Réglement n°1967/2006 modifié`,
-          taille: '15 cm',
-          obligation: 'Oui',
-          autre: null,
-        }),
-      ];
-    },
-    [t]
-  );
 
   useEffect(() => {
     if (isModalOpen && swiper) {

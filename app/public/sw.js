@@ -9,6 +9,7 @@ const CORE_ASSETS = [
   '/assets/icon/icon.png',
   '/assets/data/data.json',
   '/assets/data/locations.json',
+  '/assets/sheet.json',
 ];
 
 self.addEventListener('install', (event) => {
@@ -136,6 +137,11 @@ self.addEventListener('fetch', (event) => {
 
   if (isNavigation) {
     event.respondWith(networkFirst('/index.html'));
+    return;
+  }
+
+  if (url.pathname === '/assets/sheet.json') {
+    event.respondWith(networkFirst(event.request));
     return;
   }
 
