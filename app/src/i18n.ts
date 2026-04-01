@@ -21,6 +21,7 @@ const translations = {
     navAbout: 'À propos',
     navAccount: 'Compte',
     navSupport: 'Support',
+    navPhotoDonation: 'Don de photos',
     navLogout: 'Déconnexion',
     navLogin: 'Connexion',
     navSignup: 'Inscription',
@@ -100,6 +101,28 @@ const translations = {
     supportRequestSent: "Votre demande d'assistance a été envoyée.",
     supportRequestFailed:
       "Impossible d'envoyer la demande d'assistance. Réessayez plus tard.",
+    photoDonationEntryTitle: 'Espèce {{index}}',
+    photoDonationSpeciesLabel: 'Espèce',
+    photoDonationSpeciesPlaceholder: 'Choisir une espèce',
+    photoDonationUploadButton: 'Uploader des photos',
+    photoDonationFilesSelected:
+      '{{count}} photo(s) de {{species}} sélectionnée(s)',
+    photoDonationNoFiles: 'Aucune photo sélectionnée',
+    photoDonationAddAnother: 'Ajouter une autre espèce',
+    photoDonationSubmit: 'Envoyer les photos',
+    photoDonationSubmitThanks: 'Merci beaucoup ❤️',
+    photoDonationUploading: 'Envoi en cours...',
+    photoDonationUploadingSub: 'Merci pour votre contribution',
+    photoDonationUploadComplete:
+      'Envoi terminé : {{saved}} envoyées, {{duplicates}} doublons ignorés, {{rejected}} rejetées.',
+    photoDonationUploadFailed:
+      "L'envoi a échoué. Veuillez réessayer dans quelques instants.",
+    photoDonationTotalTooLarge:
+      'La taille totale dépasse 30 Go. Réduisez le nombre de photos.',
+    photoDonationFileTooLarge:
+      '{{count}} photo(s) dépasse(nt) 10 Mo et ont été ignorées.',
+    photoDonationPreviewAlt: 'Aperçu photo {{index}}',
+    photoDonationRemovePhoto: 'Retirer la photo',
     ionicLogoAlt: "Logo Pêch'App",
     avatarAlt: 'avatar',
     tutorialWelcome: 'Bienvenue sur',
@@ -247,6 +270,7 @@ const translations = {
     navAbout: 'About',
     navAccount: 'Account',
     navSupport: 'Support',
+    navPhotoDonation: 'Photo donation',
     navLogout: 'Logout',
     navLogin: 'Login',
     navSignup: 'Signup',
@@ -324,6 +348,27 @@ const translations = {
     supportRequestSent: 'Your support request has been sent.',
     supportRequestFailed:
       'Unable to send the support request. Please try again later.',
+    photoDonationEntryTitle: 'Species {{index}}',
+    photoDonationSpeciesLabel: 'Species',
+    photoDonationSpeciesPlaceholder: 'Select a species',
+    photoDonationUploadButton: 'Upload photos',
+    photoDonationFilesSelected: '{{count}} {{species}} photo(s) selected',
+    photoDonationNoFiles: 'No photos selected',
+    photoDonationAddAnother: 'Add another species',
+    photoDonationSubmit: 'Send photos',
+    photoDonationSubmitThanks: 'Thank you ❤️',
+    photoDonationUploading: 'Uploading...',
+    photoDonationUploadingSub: 'Thanks for your contribution',
+    photoDonationUploadComplete:
+      'Upload complete: {{saved}} sent, {{duplicates}} duplicates ignored, {{rejected}} rejected.',
+    photoDonationUploadFailed:
+      'Upload failed. Please try again in a few moments.',
+    photoDonationTotalTooLarge:
+      'Total size exceeds 30 GB. Please reduce the number of photos.',
+    photoDonationFileTooLarge:
+      '{{count}} photo(s) exceed 10 MB and were ignored.',
+    photoDonationPreviewAlt: 'Photo preview {{index}}',
+    photoDonationRemovePhoto: 'Remove photo',
     ionicLogoAlt: "Pech'App logo",
     avatarAlt: 'avatar',
     tutorialWelcome: 'Welcome to',

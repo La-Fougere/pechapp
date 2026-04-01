@@ -1,0 +1,181 @@
+#photo-donation-page {
+  .photo-donation {
+    padding: 16px;
+  }
+
+  .photo-donation__card {
+    margin: 0 0 16px;
+  }
+
+  .photo-donation__upload {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .photo-donation__file {
+    display: none;
+  }
+
+  .photo-donation__hint {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+  }
+
+  .photo-donation__preview-track {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 4px 2px 2px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .photo-donation__preview-wrapper {
+    position: relative;
+    flex: 0 0 auto;
+    padding-top: 6px;
+  }
+
+  .photo-donation__preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: var(--ion-color-step-100, #e7ecef);
+    border: 1px solid var(--ion-color-step-200, #d2d8dc);
+    scroll-snap-align: start;
+    cursor: pointer;
+  }
+
+  .photo-donation__preview-remove {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .photo-donation__preview-remove ion-icon {
+    font-size: 14px;
+  }
+
+  .photo-donation__preview-remove:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .photo-donation__add {
+    width: 100%;
+    margin: 4px 0 16px;
+  }
+
+  .photo-donation__submit {
+    margin: 0 0 16px;
+    --progress: 100%;
+    --background: linear-gradient(
+      90deg,
+      var(--ion-color-primary) 0%,
+      var(--ion-color-primary) var(--progress),
+      var(--ion-color-primary-shade, #0f4fb8) var(--progress),
+      var(--ion-color-primary-shade, #0f4fb8) 100%
+    );
+    --background-activated: var(--ion-color-primary-shade, #0f4fb8);
+    --background-focused: var(--ion-color-primary-tint, #3f7ef0);
+    --color: #fff;
+  }
+
+  .photo-donation__submit[disabled] {
+    --background: var(--ion-color-step-300, #cbd3d6);
+    --color: var(--ion-color-step-700, #6b7377);
+  }
+
+  .photo-donation__submit-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.1;
+  }
+
+  .photo-donation__submit-sub {
+    font-size: 0.85rem;
+    opacity: 0.9;
+  }
+}
+
+.photo-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(2px);
+  padding: 16px;
+}
+
+.photo-lightbox__content {
+  max-width: min(92vw, 920px);
+  max-height: 86vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 160ms ease;
+  touch-action: none;
+}
+
+.photo-lightbox__content img {
+  max-width: 100%;
+  max-height: 86vh;
+  object-fit: contain;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.photo-lightbox__close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.photo-lightbox__close ion-icon {
+  font-size: 20px;
+}
+
+@media (min-width: 768px) {
+  #photo-donation-page {
+    .photo-donation {
+      padding: 24px;
+    }
+
+    .photo-donation__card {
+      margin: 0 0 20px;
+    }
+
+    .photo-donation__add {
+      width: auto;
+    }
+  }
+}

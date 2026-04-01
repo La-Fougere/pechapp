@@ -19,6 +19,7 @@ import {
   logOut,
   leafOutline,
   bookOutline,
+  cloudUploadOutline,
   person,
   personAdd,
   settingsOutline,
@@ -54,6 +55,7 @@ const Menu: React.FC<MenuProps> = ({
       { title: t('navHome'), path: '/tabs/home', icon: homeOutline },
       { title: t('navIdentify'), path: '/identify', icon: searchOutline },
       { title: t('navSpecies'), path: '/tabs/species', icon: leafOutline },
+      { title: t('navPhotoDonation'), path: '/don-photos', icon: cloudUploadOutline },
       { title: t('navLegislation'), path: '/tabs/legislation', icon: bookOutline },
     ],
     loggedInPages: [

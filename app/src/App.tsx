@@ -60,6 +60,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Support from './pages/Support';
 import Tutorial from './pages/Tutorial';
+import PhotoDonation from './pages/PhotoDonation';
 import HomeOrTutorial from './components/HomeOrTutorial';
 import RedirectToLogin from './components/RedirectToLogin';
 import Settings from './pages/Settings';
@@ -160,6 +161,7 @@ const IonicApp: React.FC<IonicAppProps> = ({
             <Route path="/settings" component={Settings} />
             <Route path="/identify" component={Identify} />
             <Route path="/support" component={Support} />
+            <Route path="/don-photos" component={PhotoDonation} />
             <Route path="/tutorial" component={Tutorial} />
             <Route
               path="/logout"
