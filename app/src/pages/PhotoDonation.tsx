@@ -5,8 +5,6 @@ import {
   IonTitle,
   IonContent,
   IonPage,
-  IonButtons,
-  IonMenuButton,
   IonList,
   IonItem,
   IonLabel,
@@ -21,6 +19,8 @@ import {
   useIonToast,
 } from '@ionic/react';
 import { addOutline, cloudUploadOutline, closeOutline } from 'ionicons/icons';
+import { connect } from '../data/connect';
+import { setMenuEnabled } from '../data/sessions/sessions.actions';
 import { useTranslation } from '../i18n';
 import './PhotoDonation.scss';
 
@@ -73,7 +73,11 @@ const MAX_FILE_BYTES = 10 * 1024 * 1024;
 const MAX_TOTAL_BYTES = 30 * 1024 * 1024 * 1024;
 const BATCH_SIZE = 50;
 
-const PhotoDonation: React.FC = () => {
+interface DispatchProps {
+  setMenuEnabled: typeof setMenuEnabled;
+}
+
+const PhotoDonation: React.FC<DispatchProps> = ({ setMenuEnabled }) => {
   const { t } = useTranslation();
   const [present] = useIonToast();
   const nextId = useRef(0);
@@ -106,6 +110,13 @@ const PhotoDonation: React.FC = () => {
   const canAddAnother = lastEntry ? getFileCount(lastEntry.id) > 0 : false;
   const hasAnyFiles = entries.some((entry) => getFileCount(entry.id) > 0);
   const progressPercent = Math.round((isUploading ? uploadProgress : 1) * 100);
+
+  useEffect(() => {
+    setMenuEnabled(false);
+    return () => {
+      setMenuEnabled(true);
+    };
+  }, [setMenuEnabled]);
 
   useEffect(() => {
     fileStoreRef.current = fileStore;
@@ -674,9 +685,6 @@ const PhotoDonation: React.FC = () => {
     <IonPage id="photo-donation-page">
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonMenuButton></IonMenuButton>
-          </IonButtons>
           <IonTitle>{t('navPhotoDonation')}</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -866,4 +874,9 @@ const PhotoDonation: React.FC = () => {
   );
 };
 
-export default PhotoDonation;
+export default connect<{}, {}, DispatchProps>({
+  mapDispatchToProps: {
+    setMenuEnabled,
+  },
+  component: PhotoDonation,
+});
