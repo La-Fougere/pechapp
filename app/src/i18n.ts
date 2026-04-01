@@ -21,7 +21,7 @@ const translations = {
     navAbout: 'À propos',
     navAccount: 'Compte',
     navSupport: 'Support',
-    navPhotoDonation: 'Don de photos',
+    navPhotoDonation: "Don de photos pour Pêch'App",
     navLogout: 'Déconnexion',
     navLogin: 'Connexion',
     navSignup: 'Inscription',

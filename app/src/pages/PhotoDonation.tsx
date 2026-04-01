@@ -401,12 +401,64 @@ const PhotoDonation: React.FC = () => {
     }
   };
 
+  const convertImageToPng = async (file: File): Promise<File | null> => {
+    try {
+      let bitmap: ImageBitmap | null = null;
+      try {
+        bitmap = await createImageBitmap(file);
+      } catch (error) {
+        console.error('Image bitmap creation failed', error);
+        return null;
+      }
+
+      let blob: Blob | null = null;
+      if ('OffscreenCanvas' in window) {
+        const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          bitmap.close();
+          return null;
+        }
+        ctx.drawImage(bitmap, 0, 0);
+        blob = await canvas.convertToBlob({ type: 'image/png' });
+      } else {
+        const canvas = document.createElement('canvas');
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          bitmap.close();
+          return null;
+        }
+        ctx.drawImage(bitmap, 0, 0);
+        blob = await new Promise<Blob | null>((resolve) =>
+          canvas.toBlob(resolve, 'image/png')
+        );
+      }
+
+      bitmap.close();
+      if (!blob) {
+        return null;
+      }
+
+      const baseName = file.name.replace(/\.(jpg|jpeg|heic|heif|png)$/i, '');
+      return new File([blob], `${baseName}.png`, { type: 'image/png' });
+    } catch (error) {
+      console.error('PNG conversion failed', error);
+      return null;
+    }
+  };
+
   const normalizeFile = async (file: File): Promise<File | null> => {
     if (isHeicFile(file)) {
       const converted = await convertHeicToPng(file);
       return converted && converted.size <= MAX_FILE_BYTES ? converted : null;
     }
-    if (isJpegFile(file) || isPngFile(file)) {
+    if (isJpegFile(file)) {
+      const converted = await convertImageToPng(file);
+      return converted && converted.size <= MAX_FILE_BYTES ? converted : null;
+    }
+    if (isPngFile(file)) {
       return file.size <= MAX_FILE_BYTES ? file : null;
     }
     return null;

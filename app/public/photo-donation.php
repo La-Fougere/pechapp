@@ -205,41 +205,95 @@ foreach ($fileNames as $index => $name) {
 
 $saved = 0;
 if (count($newFiles) > 0) {
-  $indexFile = $speciesDir . '/.index';
-  $indexHandle = fopen($indexFile, 'c+');
-  if ($indexHandle) {
-    flock($indexHandle, LOCK_EX);
-    $currentIndex = (int) trim((string) stream_get_contents($indexHandle));
-    $dateSuffix = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('d_m_y');
+  $dateSuffix = (new DateTime('now', new DateTimeZone('Europe/Paris')))->format('d_m_y');
 
-    foreach ($newFiles as $fileInfo) {
-      $currentIndex += 1;
-      $indexStr = str_pad((string) $currentIndex, 7, '0', STR_PAD_LEFT);
-      $extension = $fileInfo['mime'] === 'image/png' ? 'png' : 'jpg';
-      $fileName = $species . '_' . $indexStr . '_' . $dateSuffix . '.' . $extension;
-      $destination = $speciesDir . '/' . $fileName;
+  foreach ($newFiles as $fileInfo) {
+    $extension = $fileInfo['mime'] === 'image/png' ? 'png' : 'jpg';
+    $tempName = $species . '_pending_' . bin2hex(random_bytes(4)) . '_' . $dateSuffix . '.' . $extension;
+    $destination = $speciesDir . '/' . $tempName;
 
-      if (move_uploaded_file($fileInfo['tmp'], $destination)) {
-        $saved += 1;
-        file_put_contents($fileInfo['hash_path'], $species . '/' . $fileName);
-      } else {
-        $rejected += 1;
-        @unlink($fileInfo['hash_path']);
-      }
-    }
-
-    rewind($indexHandle);
-    ftruncate($indexHandle, 0);
-    fwrite($indexHandle, (string) $currentIndex);
-    fflush($indexHandle);
-    flock($indexHandle, LOCK_UN);
-    fclose($indexHandle);
-  } else {
-    foreach ($newFiles as $fileInfo) {
+    if (move_uploaded_file($fileInfo['tmp'], $destination)) {
+      $saved += 1;
+      file_put_contents($fileInfo['hash_path'], $species . '/' . $tempName);
+    } else {
+      $rejected += 1;
       @unlink($fileInfo['hash_path']);
     }
-    $rejected += count($newFiles);
   }
+}
+
+function reindex_species(string $speciesDir, string $species): bool {
+  $files = [];
+  $iterator = new DirectoryIterator($speciesDir);
+  foreach ($iterator as $fileinfo) {
+    if ($fileinfo->isDot() || !$fileinfo->isFile()) {
+      continue;
+    }
+    $name = $fileinfo->getFilename();
+    if ($name === '.index' || str_starts_with($name, '.tmp_')) {
+      continue;
+    }
+    $ext = strtolower($fileinfo->getExtension());
+    if ($ext === 'jpeg') {
+      $ext = 'jpg';
+    }
+    if ($ext !== 'jpg' && $ext !== 'png') {
+      continue;
+    }
+    $files[] = [
+      'path' => $fileinfo->getPathname(),
+      'mtime' => $fileinfo->getMTime(),
+      'ext' => $ext,
+    ];
+  }
+
+  usort($files, function ($a, $b) {
+    if ($a['mtime'] === $b['mtime']) {
+      return strcmp($a['path'], $b['path']);
+    }
+    return $a['mtime'] <=> $b['mtime'];
+  });
+
+  $tmpItems = [];
+  foreach ($files as $file) {
+    $tmp = $speciesDir . '/.tmp_' . bin2hex(random_bytes(6)) . '.' . $file['ext'];
+    if (!rename($file['path'], $tmp)) {
+      foreach ($tmpItems as $item) {
+        @rename($item['tmp'], $item['orig']);
+      }
+      return false;
+    }
+    $tmpItems[] = [
+      'tmp' => $tmp,
+      'orig' => $file['path'],
+      'mtime' => $file['mtime'],
+      'ext' => $file['ext'],
+    ];
+  }
+
+  $index = 0;
+  foreach ($tmpItems as $item) {
+    $index += 1;
+    $indexStr = str_pad((string) $index, 7, '0', STR_PAD_LEFT);
+    $dateSuffix = (new DateTime('@' . $item['mtime']))->setTimezone(new DateTimeZone('Europe/Paris'))->format('d_m_y');
+    $finalName = $species . '_' . $indexStr . '_' . $dateSuffix . '.' . $item['ext'];
+    $finalPath = $speciesDir . '/' . $finalName;
+    if (!rename($item['tmp'], $finalPath)) {
+      return false;
+    }
+  }
+
+  $indexFile = $speciesDir . '/.index';
+  file_put_contents($indexFile, (string) $index);
+  return true;
+}
+
+if (!reindex_species($speciesDir, $species)) {
+  flock($lockHandle, LOCK_UN);
+  fclose($lockHandle);
+  http_response_code(500);
+  echo json_encode(['ok' => false, 'error' => 'reindex_failed']);
+  exit;
 }
 
 flock($lockHandle, LOCK_UN);
