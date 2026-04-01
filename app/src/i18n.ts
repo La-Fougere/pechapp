@@ -98,6 +98,8 @@ const translations = {
     supportNotice:
       "Ceci n'envoie pas réellement une demande de support.",
     supportRequestSent: "Votre demande d'assistance a été envoyée.",
+    supportRequestFailed:
+      "Impossible d'envoyer la demande d'assistance. Réessayez plus tard.",
     ionicLogoAlt: "Logo Pêch'App",
     avatarAlt: 'avatar',
     tutorialWelcome: 'Bienvenue sur',
@@ -320,6 +322,8 @@ const translations = {
     supportMessageRequired: 'Support message is required',
     supportNotice: 'This does not actually send a support request.',
     supportRequestSent: 'Your support request has been sent.',
+    supportRequestFailed:
+      'Unable to send the support request. Please try again later.',
     ionicLogoAlt: "Pech'App logo",
     avatarAlt: 'avatar',
     tutorialWelcome: 'Welcome to',

@@ -49,52 +49,43 @@ const Species: React.FC = () => {
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null);
 
   const species = useMemo<SpeciesInfo[]>(
-    () => [
-      {
-        name: t('speciesPikeName'),
-        latinName: t('speciesPikeLatin'),
-        image: '/assets/img/fish/fish-pike.svg',
-        description: t('speciesPikeDescription'),
-        habitat: t('speciesPikeHabitat'),
-        size: t('speciesPikeSize'),
-        diet: t('speciesPikeDiet'),
-        period: t('speciesPikePeriod'),
-        regulation: t('speciesPikeRegulation'),
-      },
-      {
-        name: t('speciesPerchName'),
-        latinName: t('speciesPerchLatin'),
-        image: '/assets/img/fish/fish-perch.svg',
-        description: t('speciesPerchDescription'),
-        habitat: t('speciesPerchHabitat'),
-        size: t('speciesPerchSize'),
-        diet: t('speciesPerchDiet'),
-        period: t('speciesPerchPeriod'),
-        regulation: t('speciesPerchRegulation'),
-      },
-      {
-        name: t('speciesTroutName'),
-        latinName: t('speciesTroutLatin'),
-        image: '/assets/img/fish/fish-trout.svg',
-        description: t('speciesTroutDescription'),
-        habitat: t('speciesTroutHabitat'),
-        size: t('speciesTroutSize'),
-        diet: t('speciesTroutDiet'),
-        period: t('speciesTroutPeriod'),
-        regulation: t('speciesTroutRegulation'),
-      },
-      {
-        name: t('speciesZanderName'),
-        latinName: t('speciesZanderLatin'),
-        image: '/assets/img/fish/fish-zander.svg',
-        description: t('speciesZanderDescription'),
-        habitat: t('speciesZanderHabitat'),
-        size: t('speciesZanderSize'),
-        diet: t('speciesZanderDiet'),
-        period: t('speciesZanderPeriod'),
-        regulation: t('speciesZanderRegulation'),
-      },
-    ],
+    () => {
+      const image = '/assets/img/fish/fish-hero.svg';
+      const makeSpecies = (name: string, latinName: string): SpeciesInfo => ({
+        name,
+        latinName,
+        image,
+        description: `Fiche descriptive de ${name} à compléter.`,
+        habitat: 'Habitat à compléter.',
+        size: 'Taille à compléter.',
+        diet: 'Régime alimentaire à compléter.',
+        period: 'Période de présence à compléter.',
+        regulation: 'Réglementation à compléter.',
+      });
+
+      return [
+        makeSpecies('Bar', 'Dicentrarchus labrax'),
+        makeSpecies('Sparaillon', 'Diplodus annularis'),
+        makeSpecies('Sar à museau pointu', 'Diplodus puntazzo'),
+        makeSpecies('Sar commun', 'Diplodus sargus'),
+        makeSpecies('Sar à tête noire', 'Diplodus vulgaris'),
+        makeSpecies('Anchois', 'Engraulis encrasicolus'),
+        makeSpecies('Mérou Royal', 'Mycteroperca rubra'),
+        makeSpecies('Marbré', 'Lithognathus mormyrus'),
+        makeSpecies('Merlu commun', 'Merluccius merluccius'),
+        makeSpecies('Rouget Barbet de roche', 'Mullus surmuletus'),
+        makeSpecies('Pageot acarné', 'Pagellus acarne'),
+        makeSpecies('Dorade rose', 'Pagellus bogaraveo'),
+        makeSpecies('Pageot commun', 'Pagellus erythrinus'),
+        makeSpecies('Pagre commun', 'Pagrus pagrus'),
+        makeSpecies('Cernier atlantique', 'Polyprion americanus'),
+        makeSpecies('Sardine', 'Sardina pilchardus'),
+        makeSpecies('Maquereau', 'Scomber scombrus'),
+        makeSpecies('Sole commune', 'Solea vulgaris'),
+        makeSpecies('Dorade royale', 'Sparus aurata'),
+        makeSpecies('Chinchard', 'Trachurus trachurus'),
+      ];
+    },
     [t]
   );
 
@@ -149,6 +140,7 @@ const Species: React.FC = () => {
         <IonModal
           isOpen={isModalOpen}
           onDidDismiss={() => setIsModalOpen(false)}
+          className="species-modal"
         >
           <IonHeader>
             <IonToolbar>
@@ -162,69 +154,86 @@ const Species: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent>
-            <Swiper
-              onSwiper={setSwiper}
-              onSlideChange={(instance) => setActiveIndex(instance.activeIndex)}
-              initialSlide={activeIndex}
-              className="species-swiper"
-            >
-              {species.map((fish) => (
-                <SwiperSlide key={fish.name}>
-                  <div className="species-slide">
-                    <div className="species-slide__header">
-                      <img src={fish.image} alt={fish.name} />
-                      <h2>{fish.name}</h2>
-                      <IonText color="medium">
-                        <p className="species-slide__latin">{fish.latinName}</p>
-                      </IonText>
-                      <p className="species-slide__description">
-                        {fish.description}
-                      </p>
+          <IonContent className="species-modal__content">
+            <div className="species-modal__body">
+              <Swiper
+                onSwiper={setSwiper}
+                onSlideChange={(instance) => setActiveIndex(instance.activeIndex)}
+                initialSlide={activeIndex}
+                className="species-swiper"
+              >
+                {species.map((fish) => (
+                  <SwiperSlide key={fish.name}>
+                    <div className="species-slide" style={{ padding: '0 0 16px' }}>
+                      <div
+                        className="species-slide__header"
+                        style={{ padding: '12px 16px 0', textAlign: 'center' }}
+                      >
+                        <img
+                          src={fish.image}
+                          alt={fish.name}
+                          style={{
+                            width: 'min(320px, 100%)',
+                            display: 'block',
+                            margin: '0 auto 16px',
+                          }}
+                        />
+                        <h2>{fish.name}</h2>
+                        <IonText color="medium">
+                          <p className="species-slide__latin">{fish.latinName}</p>
+                        </IonText>
+                        <p className="species-slide__description">
+                          {fish.description}
+                        </p>
+                      </div>
+                      <IonList inset>
+                        <IonItem>
+                          <IonLabel>{t('speciesHabitatLabel')}</IonLabel>
+                          <IonText slot="end">{fish.habitat}</IonText>
+                        </IonItem>
+                        <IonItem>
+                          <IonLabel>{t('speciesSizeLabel')}</IonLabel>
+                          <IonText slot="end">{fish.size}</IonText>
+                        </IonItem>
+                        <IonItem>
+                          <IonLabel>{t('speciesDietLabel')}</IonLabel>
+                          <IonText slot="end">{fish.diet}</IonText>
+                        </IonItem>
+                        <IonItem>
+                          <IonLabel>{t('speciesPeriodLabel')}</IonLabel>
+                          <IonText slot="end">{fish.period}</IonText>
+                        </IonItem>
+                      </IonList>
+                      <div className="species-regulation">
+                        <h3 className="species-regulation__title">
+                          {t('speciesRegulationLabel')}
+                        </h3>
+                        <p className="species-regulation__text">
+                          {fish.regulation}
+                        </p>
+                      </div>
                     </div>
-                    <IonList inset>
-                      <IonItem>
-                        <IonLabel>{t('speciesHabitatLabel')}</IonLabel>
-                        <IonText slot="end">{fish.habitat}</IonText>
-                      </IonItem>
-                      <IonItem>
-                        <IonLabel>{t('speciesSizeLabel')}</IonLabel>
-                        <IonText slot="end">{fish.size}</IonText>
-                      </IonItem>
-                      <IonItem>
-                        <IonLabel>{t('speciesDietLabel')}</IonLabel>
-                        <IonText slot="end">{fish.diet}</IonText>
-                      </IonItem>
-                      <IonItem>
-                        <IonLabel>{t('speciesPeriodLabel')}</IonLabel>
-                        <IonText slot="end">{fish.period}</IonText>
-                      </IonItem>
-                      <IonItem>
-                        <IonLabel>{t('speciesRegulationLabel')}</IonLabel>
-                        <IonText slot="end">{fish.regulation}</IonText>
-                      </IonItem>
-                    </IonList>
-                  </div>
                 </SwiperSlide>
               ))}
-            </Swiper>
-            <div className="species-modal__nav">
-              <IonButton
-                fill="clear"
-                onClick={() => swiper?.slidePrev()}
-                disabled={activeIndex === 0}
-              >
-                <IonIcon slot="start" icon={chevronBackOutline} />
-                {t('commonPrevious')}
-              </IonButton>
-              <IonButton
-                fill="clear"
-                onClick={() => swiper?.slideNext()}
-                disabled={activeIndex === species.length - 1}
-              >
-                {t('commonNext')}
-                <IonIcon slot="end" icon={chevronForwardOutline} />
-              </IonButton>
+              </Swiper>
+              <div className="species-modal__nav">
+                <IonButton
+                  fill="clear"
+                  onClick={() => swiper?.slidePrev()}
+                  disabled={activeIndex === 0}
+                >
+                  <IonIcon slot="start" icon={chevronBackOutline} />
+                  {t('commonPrevious')}
+                </IonButton>
+                <IonButton
+                  fill="clear"
+                  onClick={() => swiper?.slideNext()}
+                  disabled={activeIndex === species.length - 1}
+                >
+                  {t('commonNext')}
+                  <IonIcon slot="end" icon={chevronForwardOutline} />
+                </IonButton>
+              </div>
             </div>
           </IonContent>
         </IonModal>
