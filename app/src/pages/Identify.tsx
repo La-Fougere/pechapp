@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   IonHeader,
   IonToolbar,
@@ -17,6 +17,10 @@ import {
   IonText,
   IonProgressBar,
   IonAlert,
+  IonModal,
+  IonList,
+  IonItem,
+  IonLabel,
 } from '@ionic/react';
 import {
   cameraOutline,
@@ -24,6 +28,9 @@ import {
   searchOutline,
   refreshOutline,
   arrowBackOutline,
+  closeOutline,
+  chevronBackOutline,
+  chevronForwardOutline,
 } from 'ionicons/icons';
 import { useTranslation } from '../i18n';
 import questionsData from '../data/qcm/fish_qcm_questions.json';
@@ -51,6 +58,18 @@ type FishRecord = {
   image: string;
 };
 
+type SpeciesDetails = {
+  name: string;
+  latinName: string;
+  image: string;
+  description: string;
+  habitat: string;
+  size: string;
+  diet: string;
+  period: string;
+  regulation: string;
+};
+
 type ScoreResult = {
   fish: FishRecord;
   score: number;
@@ -59,9 +78,26 @@ type ScoreResult = {
 
 type AnswersMap = Record<string, string[]>;
 
+type SheetSpecies = {
+  name?: string;
+  latin_name?: string;
+  appellation_speciale?: string;
+  code_fao?: string;
+  taille_minimale?: string;
+  obligation_de_debarquement?: string;
+  textes_reglementaires?: string;
+  autre?: string;
+  description?: string;
+  habitat?: string;
+  diet?: string;
+  period?: string;
+  image?: string;
+};
+
 const STOP_PROBABILITY = 0.9;
 const CANDIDATE_SCORE_MARGIN = 2;
 const MIN_ANSWERED_QUESTIONS = 3;
+const DEFAULT_IMAGE = '/assets/img/fish/fish-hero.svg';
 
 const normalizeToken = (value: string) =>
   value
@@ -73,6 +109,36 @@ const normalizeToken = (value: string) =>
 
 const toSlug = (value: string) =>
   normalizeToken(value).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+const cleanText = (value?: string | null) =>
+  typeof value === 'string' ? value.replace(/\r\n/g, '\n').trim() : '';
+
+const normalizeSize = (value?: string | null) => {
+  const cleaned = cleanText(value);
+  if (!cleaned) return 'Taille à compléter.';
+  return cleaned.replace(/(\d)(cm)/gi, '$1 cm').replace(/\s+/g, ' ').trim();
+};
+
+const buildRegulation = (
+  textes?: string | null,
+  obligation?: string | null,
+  autre?: string | null
+) => {
+  const parts: string[] = [];
+  const cleanedTextes = cleanText(textes);
+  if (cleanedTextes) {
+    parts.push(`Textes applicables :\n${cleanedTextes}`);
+  }
+  const cleanedObligation = cleanText(obligation);
+  if (cleanedObligation) {
+    parts.push(`Obligation de débarquement : ${cleanedObligation}`);
+  }
+  const cleanedAutre = cleanText(autre);
+  if (cleanedAutre) {
+    parts.push(`Autre :\n${cleanedAutre}`);
+  }
+  return parts.length > 0 ? parts.join('\n\n') : 'Réglementation à compléter.';
+};
 
 const isMissingValue = (value?: string) => {
   if (!value) {
@@ -272,6 +338,9 @@ const Identify: React.FC = () => {
   const [answers, setAnswers] = useState<AnswersMap>({});
   const [draftMulti, setDraftMulti] = useState<string[]>([]);
   const [showPhotoAlert, setShowPhotoAlert] = useState(false);
+  const [speciesDetails, setSpeciesDetails] = useState<SpeciesDetails[]>([]);
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [activeResultIndex, setActiveResultIndex] = useState(0);
 
   const question = questions[currentIndex];
   const progressValue =
@@ -282,11 +351,110 @@ const Identify: React.FC = () => {
     [fishList, questions, answers]
   );
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSheet = async () => {
+      try {
+        const response = await fetch('/assets/sheet.json', { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Failed to load sheet.json (${response.status})`);
+        }
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error('sheet.json payload is not an array');
+        }
+        const mapped = data
+          .map((row: SheetSpecies) => {
+            const name = cleanText(row.name);
+            const latinName = cleanText(row.latin_name);
+            if (!name || !latinName) {
+              return null;
+            }
+            const description = cleanText(row.description);
+            const habitat = cleanText(row.habitat);
+            const diet = cleanText(row.diet);
+            const period = cleanText(row.period);
+
+            return {
+              name,
+              latinName,
+              image: cleanText(row.image) || DEFAULT_IMAGE,
+              description:
+                description || `Fiche descriptive de ${name} à compléter.`,
+              habitat: habitat || 'Habitat à compléter.',
+              size: normalizeSize(row.taille_minimale),
+              diet: diet || 'Régime alimentaire à compléter.',
+              period: period || 'Période de présence à compléter.',
+              regulation: buildRegulation(
+                row.textes_reglementaires ?? null,
+                row.obligation_de_debarquement ?? null,
+                row.autre ?? null
+              ),
+            };
+          })
+          .filter((entry): entry is SpeciesDetails => Boolean(entry));
+
+        if (mapped.length > 0 && isMounted) {
+          setSpeciesDetails(mapped);
+        }
+      } catch (error) {
+        console.warn('Unable to load sheet.json, using fallback data.', error);
+      }
+    };
+
+    loadSheet();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const speciesDetailsMap = useMemo(() => {
+    const map = new Map<string, SpeciesDetails>();
+    speciesDetails.forEach((entry) => {
+      map.set(toSlug(entry.latinName), entry);
+      map.set(toSlug(entry.name), entry);
+    });
+    return map;
+  }, [speciesDetails]);
+
+  const resolveSpeciesDetails = (fish: FishRecord): SpeciesDetails => {
+    const latinKey = toSlug(fish.scientificName || '');
+    const nameKey = toSlug(fish.name || '');
+    return (
+      speciesDetailsMap.get(latinKey) ||
+      speciesDetailsMap.get(nameKey) || {
+        name: fish.name,
+        latinName: fish.scientificName || fish.name,
+        image: fish.image || DEFAULT_IMAGE,
+        description: `Fiche descriptive de ${fish.name} à compléter.`,
+        habitat: 'Habitat à compléter.',
+        size: 'Taille à compléter.',
+        diet: 'Régime alimentaire à compléter.',
+        period: 'Période de présence à compléter.',
+        regulation: 'Réglementation à compléter.',
+      }
+    );
+  };
+
+  const resolveResultImage = (fish: FishRecord) => {
+    const latinKey = toSlug(fish.scientificName || '');
+    const nameKey = toSlug(fish.name || '');
+    return (
+      speciesDetailsMap.get(latinKey)?.image ||
+      speciesDetailsMap.get(nameKey)?.image ||
+      fish.image ||
+      DEFAULT_IMAGE
+    );
+  };
+
   const startQuestions = () => {
     setMode('qcm');
     setCurrentIndex(0);
     setAnswers({});
     setDraftMulti([]);
+    setIsResultModalOpen(false);
   };
 
   const backToChoices = () => {
@@ -294,6 +462,7 @@ const Identify: React.FC = () => {
     setCurrentIndex(0);
     setAnswers({});
     setDraftMulti([]);
+    setIsResultModalOpen(false);
   };
 
   const submitAnswer = (values: string[]) => {
@@ -341,8 +510,26 @@ const Identify: React.FC = () => {
   };
 
   const topResults = results.slice(0, 3);
+  const activeResult = topResults[activeResultIndex];
+  const activeDetails = activeResult
+    ? resolveSpeciesDetails(activeResult.fish)
+    : null;
+  const activePercent = activeResult
+    ? Math.round(activeResult.probability * 100)
+    : 0;
   const showNoMatch =
     topResults.length > 0 && (topResults[0]?.probability || 0) < 0.5;
+
+  useEffect(() => {
+    if (activeResultIndex >= topResults.length) {
+      setActiveResultIndex(0);
+    }
+  }, [activeResultIndex, topResults.length]);
+
+  const openResultModal = (index: number) => {
+    setActiveResultIndex(index);
+    setIsResultModalOpen(true);
+  };
 
   return (
     <IonPage id="identify-page">
@@ -483,11 +670,23 @@ const Identify: React.FC = () => {
             </div>
 
             <div className="identify-results__grid">
-              {topResults.map((result) => (
-                <IonCard key={result.fish.id} className="identify-result-card">
+              {topResults.map((result, index) => (
+                <IonCard
+                  key={result.fish.id}
+                  className="identify-result-card"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openResultModal(index)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      openResultModal(index);
+                    }
+                  }}
+                >
                   <div className="identify-result-media">
                     <img
-                      src={result.fish.image}
+                      src={resolveResultImage(result.fish)}
                       alt={result.fish.name}
                       loading="lazy"
                     />
@@ -516,6 +715,94 @@ const Identify: React.FC = () => {
                 {t('identifyBack')}
               </IonButton>
             </div>
+
+            <IonModal
+              isOpen={isResultModalOpen}
+              onDidDismiss={() => setIsResultModalOpen(false)}
+              className="identify-species-modal"
+            >
+              <IonHeader>
+                <IonToolbar>
+                  <IonTitle>
+                    {activeDetails?.name || t('speciesDetailsTitle')}
+                    {activeDetails ? ` (${activePercent}%)` : ''}
+                  </IonTitle>
+                  <IonButtons slot="end">
+                    <IonButton onClick={() => setIsResultModalOpen(false)}>
+                      <IonIcon slot="icon-only" icon={closeOutline} />
+                    </IonButton>
+                  </IonButtons>
+                </IonToolbar>
+              </IonHeader>
+              <IonContent className="identify-species-modal__content">
+                {activeDetails && (
+                  <div className="identify-species-modal__body">
+                    <div className="identify-species-header">
+                      <img src={activeDetails.image} alt={activeDetails.name} />
+                      <h2>{activeDetails.name}</h2>
+                      <IonText color="medium">
+                        <p className="identify-species-latin">
+                          {activeDetails.latinName}
+                        </p>
+                      </IonText>
+                      <p className="identify-species-description">
+                        {activeDetails.description}
+                      </p>
+                    </div>
+                    <IonList inset>
+                      <IonItem>
+                        <IonLabel>{t('speciesHabitatLabel')}</IonLabel>
+                        <IonText slot="end">{activeDetails.habitat}</IonText>
+                      </IonItem>
+                      <IonItem>
+                        <IonLabel>{t('speciesSizeLabel')}</IonLabel>
+                        <IonText slot="end">{activeDetails.size}</IonText>
+                      </IonItem>
+                      <IonItem>
+                        <IonLabel>{t('speciesDietLabel')}</IonLabel>
+                        <IonText slot="end">{activeDetails.diet}</IonText>
+                      </IonItem>
+                      <IonItem>
+                        <IonLabel>{t('speciesPeriodLabel')}</IonLabel>
+                        <IonText slot="end">{activeDetails.period}</IonText>
+                      </IonItem>
+                    </IonList>
+                    <div className="identify-species-regulation">
+                      <h3 className="identify-species-regulation__title">
+                        {t('speciesRegulationLabel')}
+                      </h3>
+                      <p className="identify-species-regulation__text">
+                        {activeDetails.regulation}
+                      </p>
+                    </div>
+                    <div className="identify-species-modal__nav">
+                      <IonButton
+                        fill="clear"
+                        onClick={() =>
+                          setActiveResultIndex((index) => Math.max(0, index - 1))
+                        }
+                        disabled={activeResultIndex === 0}
+                      >
+                        <IonIcon slot="start" icon={chevronBackOutline} />
+                        {t('commonPrevious')}
+                      </IonButton>
+                      <IonButton
+                        fill="clear"
+                        onClick={() =>
+                          setActiveResultIndex((index) =>
+                            Math.min(topResults.length - 1, index + 1)
+                          )
+                        }
+                        disabled={activeResultIndex >= topResults.length - 1}
+                      >
+                        {t('commonNext')}
+                        <IonIcon slot="end" icon={chevronForwardOutline} />
+                      </IonButton>
+                    </div>
+                  </div>
+                )}
+              </IonContent>
+            </IonModal>
           </div>
         )}
       </IonContent>

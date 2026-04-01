@@ -27,6 +27,7 @@ import {
 import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperInstance } from 'swiper';
 import 'swiper/css';
+import { useLocation } from 'react-router';
 import { useTranslation } from '../i18n';
 import './Species.scss';
 
@@ -78,6 +79,17 @@ const DEFAULT_IMAGE = '/assets/img/fish/fish-hero.svg';
 
 const cleanText = (value?: string | null) =>
   typeof value === 'string' ? value.replace(/\r\n/g, '\n').trim() : '';
+
+const normalizeToken = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ');
+
+const toSlug = (value: string) =>
+  normalizeToken(value).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 
 const normalizeSize = (value?: string | null) => {
   const cleaned = cleanText(value);
@@ -553,6 +565,7 @@ des lignes et des hameçons`,
 
 const Species: React.FC = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [swiper, setSwiper] = useState<SwiperInstance | null>(null);
@@ -612,6 +625,27 @@ const Species: React.FC = () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const focus = params.get('focus') || params.get('species');
+    if (!focus) {
+      return;
+    }
+    const target = toSlug(focus);
+    if (!target) {
+      return;
+    }
+    const index = species.findIndex((fish) => {
+      return (
+        toSlug(fish.latinName) === target || toSlug(fish.name) === target
+      );
+    });
+    if (index >= 0) {
+      setActiveIndex(index);
+      setIsModalOpen(true);
+    }
+  }, [location.search, species]);
 
 
   useEffect(() => {
