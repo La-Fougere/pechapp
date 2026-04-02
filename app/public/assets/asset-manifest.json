@@ -8,6 +8,7 @@
   "/assets/img/about/seattle.jpg",
   "/assets/img/appicon.png",
   "/assets/img/appicon.svg",
+  "/assets/img/fish/dicentrarchus_labrax.png",
   "/assets/img/fish/fish-hero.svg",
   "/assets/img/fish/fish-perch.svg",
   "/assets/img/fish/fish-pike.svg",
@@ -32,5 +33,6 @@
   "/assets/img/speakers/puppy.jpg",
   "/assets/img/speakers/rabbit.jpg",
   "/assets/img/speakers/turtle.jpg",
-  "/assets/shapes.svg"
+  "/assets/shapes.svg",
+  "/assets/sheet.json"
 ]
