@@ -145,3 +145,4 @@ typings/
 *.tgz
 .yarn-integrity
 sheet.json
+asset-manifest.json
